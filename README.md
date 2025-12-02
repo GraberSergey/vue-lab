@@ -15,4 +15,4 @@ npm run dev
 npm run build
 ```
 
-API: `http://95.163.242.125/api`.
+API: `http://95.163.242.125` (Swagger UI на `/api`).

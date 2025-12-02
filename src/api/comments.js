@@ -1,4 +1,4 @@
-const API_URL = 'http://95.163.242.125/api'
+const API_URL = 'http://95.163.242.125'
 const USERNAME = 'GraberSergey'
 
 // Load comments ordered by creation time
