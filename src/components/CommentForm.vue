@@ -121,9 +121,9 @@ const handleCancel = () => {
     <label class="comment-form__field">
       <span class="comment-form__label">Реакция</span>
       <select v-model.number="form.reaction" class="comment-form__select" name="reaction">
-        <option :value="-1">Положительная (-1)</option>
+        <option :value="1">Положительная (1)</option>
         <option :value="0">Нейтральная (0)</option>
-        <option :value="1">Негативная (1)</option>
+        <option :value="-1">Негативная (-1)</option>
       </select>
     </label>
 

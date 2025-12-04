@@ -22,11 +22,11 @@ const emit = defineEmits(['reply'])
 const reactionLabel = computed(() => {
   const value = props.comment.reaction
 
-  if (value === -1) {
+  if (value === 1) {
     return 'Положительная реакция'
   }
 
-  if (value === 1) {
+  if (value === -1) {
     return 'Негативная реакция'
   }
 
