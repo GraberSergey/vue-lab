@@ -1,14 +1,14 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { createComment, fetchComments, openCommentsStream } from '../api/comments'
-import { buildCommentTree, insertCommentSorted } from '../utils/comments'
+import { buildCommentTree, insertCommentSorted } from '../utils/comments' //иморт из файла
 import CommentForm from './CommentForm.vue'
 import CommentList from './CommentList.vue'
 
 const comments = ref([])
 const isLoading = ref(true)
 const errorMessage = ref('')
-const liveUpdates = ref(true)
+const liveUpdates = ref(true) //ссылки
 const isStreaming = ref(false)
 const streamRef = ref(null)
 const isFormVisible = ref(false)
@@ -16,22 +16,22 @@ const replyingTo = ref(null)
 const isSubmitting = ref(false)
 const formError = ref('')
 
-const commentTree = computed(() => buildCommentTree(comments.value))
+const commentTree = computed(() => buildCommentTree(comments.value)) 
 const totalComments = computed(() => comments.value.length)
 
 // Load all comments from API
-const loadComments = async () => {
-  isLoading.value = true
+const loadComments = async () => { // Получаем комментарии от пользователей 
+  isLoading.value = true  //начало загрузки 
   errorMessage.value = ''
 
   try {
-    const payload = await fetchComments()
+    const payload = await fetchComments() //Загрузка комментариев
     comments.value = payload
   } catch (error) {
-    console.error(error)
+    console.error(error) //ошибка
     errorMessage.value = 'Не удалось получить комментарии'
   } finally {
-    isLoading.value = false
+    isLoading.value = false //конец загрузки 
   }
 }
 
@@ -40,43 +40,43 @@ const handleIncomingComment = comment => {
 }
 
 const startStream = () => {
-  stopStream()
+  stopStream() // Останавливаем предыдущий поток (если был)
 
-  if (!liveUpdates.value) {
-    return
+  if (!liveUpdates.value) { // Проверяем, включены ли live-обновления
+    return //Если нет выходим
   }
-
+  // Создаем новый SSE-поток
   const source = openCommentsStream({
-    onComment: handleIncomingComment,
+    onComment: handleIncomingComment,  // Функция-обработчик новых комментариев
     onError: () => {
-      isStreaming.value = false
+      isStreaming.value = false // При ошибке помечаем, что поток остановлен
     },
   })
 
-  if (source) {
-    streamRef.value = source
-    isStreaming.value = true
+  if (source) {  // Если поток успешно создан
+    streamRef.value = source // Сохраняем ссылку на поток
+    isStreaming.value = true // Помечаем, что поток активен
   }
 }
 
 const stopStream = () => {
-  if (streamRef.value) {
-    streamRef.value.close()
-    streamRef.value = null
+  if (streamRef.value) { // Если поток существует
+    streamRef.value.close()  // Закрываем соединение SSE
+    streamRef.value = null // Очищаем ссылку
   }
 
-  isStreaming.value = false
+  isStreaming.value = false // Помечаем, что поток неактивен
 }
 
 const openForm = target => {
-  replyingTo.value = target ?? null
+  replyingTo.value = target ?? null // открыть форму заполнения комментариев 
   isFormVisible.value = true
   formError.value = ''
 }
 
 const closeForm = () => {
   replyingTo.value = null
-  isFormVisible.value = false
+  isFormVisible.value = false //закрыть форму заполнения комментариев 
   formError.value = ''
 }
 
@@ -90,16 +90,16 @@ const handleFormSubmit = async payload => {
 
   try {
     const body = {
-      author: payload.author,
-      text: payload.text,
-      reaction: payload.reaction,
+      author: payload.author, // данные из формы имя
+      text: payload.text, //данные из формы комментарий
+      reaction: payload.reaction, //данные из формы реакция
     }
 
     if (replyingTo.value) {
-      body.parentId = replyingTo.value.id
+      body.parentId = replyingTo.value.id //ответь на комментарий другой
     }
 
-    await createComment(body)
+    await createComment(body) //отправка комментария на сервер
     closeForm()
 
     if (!liveUpdates.value) {
@@ -107,7 +107,7 @@ const handleFormSubmit = async payload => {
     }
   } catch (error) {
     console.error(error)
-    formError.value = 'Не удалось отправить комментарий'
+    formError.value = 'Не удалось отправить комментарий' 
   } finally {
     isSubmitting.value = false
   }
@@ -115,22 +115,22 @@ const handleFormSubmit = async payload => {
 
 watch(liveUpdates, value => {
   if (value) {
-    startStream()
+    startStream() //начало потока при подписке
   } else {
-    stopStream()
+    stopStream() //конец потока при отписке
   }
 })
 
 onMounted(async () => {
-  await loadComments()
+  await loadComments() //загрузка комментариев в первый раз
 
   if (liveUpdates.value) {
-    startStream()
+    startStream() // если я включил обновление комментариев, тогда будет работать поток
   }
 })
 
 onBeforeUnmount(() => {
-  stopStream()
+  stopStream() 
 })
 </script>
 
@@ -142,7 +142,7 @@ onBeforeUnmount(() => {
         <p class="board__meta">Всего: {{ totalComments }}</p>
       </div>
 
-      <label class="toggle">
+      <label class="toggle"> 
         <input v-model="liveUpdates" class="toggle__input" type="checkbox" />
         <span class="toggle__text">Получать новые комментарии автоматически</span>
       </label>
@@ -160,16 +160,16 @@ onBeforeUnmount(() => {
     <CommentForm
       v-if="isFormVisible"
       :parent="replyingTo"
-      :pending="isSubmitting"
+      :pending="isSubmitting" 
       @submit="handleFormSubmit"
       @cancel="closeForm"
     />
 
-    <p v-if="formError" class="board__alert board__alert--inline">{{ formError }}</p>
+    <p v-if="formError" class="board__alert board__alert--inline">{{ formError }}</p> <!-- ошибка в форме -->
 
     <div v-if="isLoading" class="board__placeholder">Загрузка комментариев...</div>
     <div v-else-if="errorMessage" class="board__alert">{{ errorMessage }}</div>
     <div v-else-if="!commentTree.length" class="board__placeholder">Пока нет комментариев</div>
-    <CommentList v-else :comments="commentTree" @reply="openForm" />
+    <CommentList v-else :comments="commentTree" @reply="openForm" /> <!-- комментарии всех пользователей -->
   </section>
 </template>

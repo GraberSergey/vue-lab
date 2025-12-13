@@ -15,19 +15,19 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'cancel'])
 
 const form = reactive({
-  author: '',
+  author: '', //изначально пустая форма
   text: '',
   reaction: 0,
 })
 
 const touched = reactive({
-  author: false,
-  text: false,
+  author: false, 
+  text: false, //проверка введено ли имя и текст комментария
 })
 
 const resetForm = () => {
   form.author = ''
-  form.text = ''
+  form.text = '' //сброс формы
   form.reaction = 0
   touched.author = false
   touched.text = false
@@ -43,10 +43,10 @@ watch(
 
 const authorError = computed(() => {
   if (!touched.author) {
-    return ''
+    return '' 
   }
 
-  return form.author.trim() ? '' : 'Укажите имя'
+  return form.author.trim() ? '' : 'Укажите имя' //ошибка пустое имя
 })
 
 const textError = computed(() => {
@@ -54,27 +54,27 @@ const textError = computed(() => {
     return ''
   }
 
-  return form.text.trim() ? '' : 'Напишите текст сообщения'
+  return form.text.trim() ? '' : 'Напишите текст сообщения' //ошибка пустой комментарий 
 })
 
-const isFormValid = computed(() => Boolean(form.author.trim() && form.text.trim()))
+const isFormValid = computed(() => Boolean(form.author.trim() && form.text.trim())) //если нет одного из значений-кнопка неактивна
 
 const handleSubmit = () => {
-  touched.author = true
+  touched.author = true //функция когда отправляется комментарий
   touched.text = true
 
   if (!isFormValid.value || props.pending) {
     return
   }
 
-  emit('submit', {
+  emit('submit', { //вызов ивента сабмит
     author: form.author.trim(),
     text: form.text.trim(),
     reaction: Number(form.reaction),
   })
 }
 
-const handleCancel = () => {
+const handleCancel = () => { //когда нажимаешь на кнопку отменить - сброс формы
   if (props.pending) {
     return
   }
@@ -92,15 +92,15 @@ const handleCancel = () => {
 
     <label class="comment-form__field">
       <span class="comment-form__label">Имя</span>
-      <input
-        v-model="form.author"
+      <input 
+        v-model="form.author" 
         name="author"
         class="comment-form__input"
         type="text"
         placeholder="Например, Иван"
         @blur="touched.author = true"
         required
-      />
+      /><!-- инпут имени -->
       <span v-if="authorError" class="comment-form__error">{{ authorError }}</span>
     </label>
 
@@ -116,7 +116,7 @@ const handleCancel = () => {
         required
       ></textarea>
       <span v-if="textError" class="comment-form__error">{{ textError }}</span>
-    </label>
+    </label><!-- инпут текста комментария -->
 
     <label class="comment-form__field">
       <span class="comment-form__label">Реакция</span>
@@ -125,13 +125,13 @@ const handleCancel = () => {
         <option :value="0">Нейтральная (0)</option>
         <option :value="-1">Негативная (-1)</option>
       </select>
-    </label>
+    </label> <!-- селект выбора оценки комментария -->
 
     <div class="comment-form__actions">
-      <button class="button button--primary" type="submit" :disabled="props.pending || !isFormValid">
+      <button class="button button--primary" type="submit" :disabled="props.pending || !isFormValid"> <!-- кнопка подтверждения комментария -->
         {{ props.pending ? 'Отправка...' : 'Отправить' }}
       </button>
-      <button class="button" type="button" @click="handleCancel" :disabled="props.pending">Отмена</button>
+      <button class="button" type="button" @click="handleCancel" :disabled="props.pending">Отмена</button> <!-- кнопка отмены -->
     </div>
   </form>
 </template>

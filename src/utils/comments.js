@@ -1,9 +1,9 @@
-const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
-  dateStyle: 'medium',
+const dateFormatter = new Intl.DateTimeFormat('ru-RU', { //ру указывается по форме записи даты (число месяц год)
+  dateStyle: 'medium', 
   timeStyle: 'short',
 })
 
-// Convert incoming ISO string to readable label
+// функция формата даты 
 export function formatDate(value) {
   if (!value) {
     return ''
@@ -17,22 +17,22 @@ export function formatDate(value) {
   }
 }
 
-// Ensure comments stay ordered from oldest to newest
+// вставка в дерево комментариев
 export function insertCommentSorted(list, comment) {
   const next = list.filter(item => item.id !== comment.id)
   const createdAt = Date.parse(comment.createdAt)
   const index = next.findIndex(item => Date.parse(item.createdAt) > createdAt)
 
-  if (index === -1) {
+  if (index === -1) { // индекс если нет комментариев впринципе на сайте
     next.push(comment)
-  } else {
+  } else { // вставка в индекс
     next.splice(index, 0, comment)
   }
 
   return next
 }
 
-// Build tree with reaction sums for direct replies
+// Создание дерева комментариев
 export function buildCommentTree(source) {
   const sorted = [...source].sort(
     (a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt),
@@ -41,12 +41,12 @@ export function buildCommentTree(source) {
   const map = new Map()
 
   sorted.forEach(item => {
-    map.set(item.id, {
+    map.set(item.id, { 
       ...item,
       replies: [],
       repliesReactionSum: 0,
     })
-  })
+  })//создаём структуру дерева
 
   const roots = []
 
@@ -56,11 +56,11 @@ export function buildCommentTree(source) {
     } else {
       roots.push(node)
     }
-  })
+  }) //вставляем в дерево комментариев ответы
 
   map.forEach(node => {
     node.repliesReactionSum = node.replies.reduce((sum, reply) => sum + (reply.reaction ?? 0), 0)
-  })
+  }) // считаем сумму реакций под каждым комментарием
 
   return roots
 }

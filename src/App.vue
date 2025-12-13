@@ -5,10 +5,10 @@ import CommentBoard from './components/CommentBoard.vue'
 <template>
   <div class="app">
     <header class="app__header">
-      <p class="app__eyebrow">Vue.js lab</p>
+      <p class="app__eyebrow">Vue.js lab</p> <!-- header -->
       <h1 class="app__title">Поток комментариев</h1>
       <p class="app__subtitle">
-        Получайте ответы с сервера, следите за реакциями и простраивайте дерево обсуждения.
+        Пишите комментарии.
       </p>
     </header>
 
